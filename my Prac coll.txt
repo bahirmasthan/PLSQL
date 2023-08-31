@@ -1,0 +1,130 @@
+  set serveroutput on;
+
+--------------------------
+Example 1:
+--------------------------
+
+DECLARE
+     TYPE student_table_struct IS TABLE OF
+            student.sname%TYPE
+            INDEX BY BINARY_INTEGER;
+         s1 student_table_struct;
+    BEGIN
+    select sname,sno into s1(1),s1(1) from student where sno=101;
+dbms_output.put_line(s1(1));
+dbms_output.put_line(s1(1));
+END;
+dbms_output.put_line(s1(3));
+
+
+--------------------------
+NUMBER to STRING - Error
+--------------------------
+
+     DECLARE
+     TYPE student_table_struct IS TABLE OF
+            student.sage%TYPE
+            INDEX BY BINARY_INTEGER;
+         s1 student_table_struct;
+    BEGIN
+    select sname,sno into s1(1),s1(2) from student where sno=101;
+dbms_output.put_line(s1(1));
+dbms_output.put_line(s1(2));
+END;
+
+ 
+-----------------------------------
+More than 1 number of rows - Error
+-----------------------------------
+     DECLARE
+     TYPE student_table_struct IS TABLE OF
+            student.sname%TYPE
+            INDEX BY BINARY_INTEGER;
+         s1 student_table_struct;
+    BEGIN
+    select sname into s1(1) from student;
+dbms_output.put_line(s1(1));
+END;
+
+
+--------------------------
+Example 2 - Simple Cursor
+-------------------------
+DECLARE
+      TYPE stu_tbl IS TABLE OF VARCHAR2(20)
+                  INDEX BY BINARY_INTEGER;
+      st    stu_tbl;
+      CURSOR stu_c1 IS
+           SELECT sname FROM student ORDER BY sno;
+      v_row      NUMBER := 1;
+   BEGIN
+       OPEN stu_c1;
+       LOOP
+          EXIT WHEN stu_c1%NOTFOUND;
+          fetch stu_c1 into st(v_row); 
+           DBMS_OUTPUT.PUT_LINE(st(v_row));
+           v_row := v_row + 1;
+      END LOOP; 
+      CLOSE stu_c1;
+Exception 
+WHEN no_data_found then
+dbms_output.put_line('EOF Reached');
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+WHEN others then
+dbms_output.put_line('Unknown Issue');
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+   END;
+
+-----------------------------------
+Example 3 -  ROW type and Cursor
+-----------------------------------
+
+  set serveroutput on;
+   DECLARE
+      TYPE stu_table_struct IS TABLE OF student%rowTYPE
+       INDEX BY BINARY_INTEGER; 
+      stu_table    stu_table_struct; 
+      CURSOR stu_cursor IS
+           SELECT * FROM student ORDER BY sno; 
+      v_row      NUMBER := 1;
+   BEGIN
+       OPEN stu_cursor;
+       LOOP
+          EXIT WHEN stu_cursor%NOTFOUND;
+          fetch stu_cursor into stu_table(v_row); 
+           DBMS_OUTPUT.PUT(stu_table(v_row).sname);
+           DBMS_OUTPUT.PUT(' << '|| stu_table(v_row).sno || ' >> ');
+           DBMS_OUTPUT.PUT('of age '|| stu_table(v_row).sage);
+           DBMS_OUTPUT.PUT_LINE( ' lives in '||stu_table(v_row).scity);
+                     v_row := v_row + 1;
+      END LOOP; 
+exception
+when no_data_found then
+dbms_output.put_line('EOF Reached');
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+WHEN others then
+dbms_output.put_line('Unknown Issue');
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+      CLOSE stu_cursor;
+   END;
+
+-----------------------------------
+Example 4 -  Record 
+-------------------------------------
+   set serveroutput on;
+   DECLARE
+    TYPE s_rec_struct IS RECORD
+            (en      student.sname%TYPE,
+             ec      student.scity%TYPE);
+     TYPE s_table_struct IS TABLE OF s_rec_struct
+     INDEX BY BINARY_INTEGER;
+     s_table   s_table_struct;    
+   BEGIN
+      select sname,scity into s_table(1).en,s_table(1).ec from student where sno=105;
+     dbms_output.put_line(s_table(1).en);
+     dbms_output.put_line(s_table(1).ec);
+     END;

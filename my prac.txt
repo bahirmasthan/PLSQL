@@ -1,0 +1,144 @@
+ set serveroutput on
+
+
+Addition
+================
+  declare
+  a number;
+  b number;
+  c number;
+  begin
+  a:=&a;
+  b:=&b;
+  c:=a+b;
+  dbms_output.put_line('sum='||c);
+  end;
+
+
+Simple Select query
+=====================
+declare 
+stu number;
+begin
+select sno into stu from student where sno=102;
+dbms_output.put_line(stu);
+end;
+
+
+select query with user input
+============================
+    declare
+    sid number;
+    stnm varchar2(20);
+    begin
+    sid:=&sid;
+    select sno,sname into sid,stnm from student where sno=sid;
+    dbms_output.put_line('STUDENT NO:'||sid);
+    dbms_output.put_line('NAME:'||stnm);
+    end;
+
+select query with dEFINE vARIABLE
+========================================
+   DEFINE SNOO=102;
+   DECLARE
+   NAME STUDENT.SNAME%TYPE;
+   BEGIN
+   SELECT SNAME INTO NAME FROM STUDENT WHERE SNO=&SNOO;
+   dbms_output.put_line(NAME);
+   END;
+
+%type attribute
+================
+    declare
+    sid student.sno%type;
+    stnm student.sname%type;
+    begin
+    sid:=&sid;
+    select sno,sname into sid,stnm from student where sno=sid;
+    dbms_output.put_line('STUDENT NO:'||sid);
+    dbms_output.put_line('NAME:'||stnm);
+    end;
+
+Bind Variables
+===============
+variable name varchar2(20);
+variable id number;
+begin
+select sno,sname into :id,:name from student where sno=102;
+dbms_output.put_line(:id);
+print :id :name;
+end;
+
+print :id :name
+
+  begin
+  dbms_output.put_line(:id);
+  end;
+
+
+boolean variable
+================
+declare 
+flag boolean;
+a number;
+result varchar2(20);
+begin 
+a:=&a;
+if (a>0) then
+flag:=true;
+result:='true';
+else
+flag:=false;
+result:='false';
+end if;
+dbms_output.put_line(upper(result));
+--dbms_output.put_line(flag);
+end;
+
+ 
+
+constant and variable
+=====================
+declare 
+pi constant number(8,2):=3.2;
+begin
+pi:=100;
+dbms_output.put_line(pi);
+end;
+
+
+
+Nested Block
+=============
+declare
+a number;
+begin
+a:=&a;
+    declare 
+    b number;
+    begin
+    b:=&b;
+    dbms_output.put_line(a);
+    dbms_output.put_line(b);
+    end;
+dbms_output.put_line('outer block'||b); //scope error
+end;
+
+
+
+<<outer>>
+declare
+a number;
+begin
+a:=&a;
+    declare 
+    a number;
+    b number;
+    begin
+    a:=&a;
+    b:=&b;
+    dbms_output.put_line('SUM IS:');
+    dbms_output.put_line(outer.a+a+b);
+    end;
+dbms_output.put_line('outer block: ' ||a);
+end;

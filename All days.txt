@@ -1,0 +1,981 @@
+Day 1:
+block
+3 types
+ana
+fun
+pro
+
+declare
+a number;
+b number;
+c number;
+begin
+a:=&a;
+b:=&b;
+c:=a+b;
+dbms_output.put_line('sum='||c);
+end;
+
+
+declare
+eno number;
+name varchar2(20);
+j varchar2(20);
+s number(8,2);
+begin
+eno:=&eno;
+select ename,sal,job into name,s,j from emp where empno=eno;
+dbms_output.put_line('name='||name);
+dbms_output.put_line('Job='||j);
+dbms_output.put_line('salary'||s);
+end;
+
+declare 
+emp number;
+begin
+select * into emp from emp where empno=7900;
+dbms_output.put_line(emp);
+end;
+
+
+%type attribute
+================
+declare
+eno emp.empno%type;
+name emp.ename%type;
+j emp.job%type;
+s emp.sal%type;
+begin
+eno:=&eno;
+select ename,sal,job into name,s,j from emp where empno=eno;
+dbms_output.put_line('name='||name);
+dbms_output.put_line('Job='||j);
+dbms_output.put_line('salary'||s);
+end;
+
+
+
+
+Bind Variables
+===============
+variable name varchar;
+variable s number;
+begin
+select ename,sal into :name,:s from emp where empno=7900;
+end;
+
+print :name
+print :s
+
+begin 
+dbms_output.put_line(:name);
+dbms_output.put_line(:s);
+end;
+
+boolean variable
+================
+declare 
+flag boolean;
+a number :=10;
+result varchar2(20);
+begin 
+if (a>0) then
+flag:=true;
+result:='true';
+else
+flag:=false;
+result:='false';
+end if;
+dbms_output.put_line(result);
+end;
+
+constant and variable
+=====================
+declare 
+pi constant number(8,2):=3.2;
+begin
+pi:=100;
+dbms_output.put_line(pi);
+end;
+
+Nested Block
+=============
+declare
+a number;
+begin
+a:=&a;
+	declare 
+	b number;
+	begin
+	b:=&b;
+	dbms_output.put_line(a);
+	dbms_output.put_line(b);
+	end;
+dbms_output.put_line('outer block'||b);//scope error
+end;
+
+<<outer>>
+declare
+a number;
+begin
+a:=&a;
+	declare 
+	a number;
+	b number;
+	begin
+	a:=&a;
+	b:=&b;
+	dbms_output.put_line(outer.a+a+b);
+	end;
+dbms_output.put_line('outer block'||a);
+end;
+
+
+SQL> define eno =7900
+SQL> declare
+    name varchar2(20);
+   begin
+    select ename into name from emp where empno=&eno;
+eno:=1000;
+    dbms_output.put_line(name);
+   end;
+
+
+
+declare 
+a number :=100;
+begin 
+a:=200;
+a:=&num1;
+select ename into name from emp where empno=7900;
+
+variable j varchar2(20);
+
+begin
+:j:='&j';
+update demo1 set comm=1000 where job=:j;
+dbms_output.put_line('data updated');
+end;
+
+define j='MANAGER'
+
+update demo1 set comm=1000 where job=&j;
+
+rowtype
+========
+
+declare 
+e emp%rowtype;
+begin
+select * into e from emp where empno=7900;
+dbms_output.put_line(e.ename);
+dbms_output.put_line(e.sal);
+dbms_output.put_line(e.job);
+dbms_output.put_line(e.deptno);
+end;
+
+Day 2:
+implicit cursor
+===============
+declare
+eno number;
+e1 emp%rowtype;
+begin
+eno:=&eno;
+select * into e1 from emp  where empno=eno;
+if (SQL%found) then
+dbms_output.put_line('employee present');
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('no data found');
+when others then
+dbms_output.put_line('error');
+end ;
+
+
+declare 
+j emp.job%type;
+cnt number;
+begin
+j:='&j';
+delete from demo1 where job=j;
+cnt:=sql%rowcount;
+dbms_output.put_line(cnt || ' rows deleted...');
+end;
+
+declare 
+j emp.job%type;
+cnt number;
+begin
+j:='&j';
+if (j='MANAGER') then
+update demo1 set comm=10 where job=j;
+elsif(j='ANALYST') then
+update demo1 set comm=20 where job=j; 
+else
+update demo1 set comm=30 where job=j;
+end if ;
+cnt:=sql%rowcount;
+dbms_output.put_line(cnt || ' rows deleted...');
+end;
+
+loops
+======
+declare 
+i number;
+begin
+i:=6;
+loop
+dbms_output.put_line(i);
+i:=i+1;
+exit when i>5 ;
+end loop;
+end;
+
+declare 
+i number;
+begin
+i:=6;
+loop
+exit when i>5 ;
+dbms_output.put_line(i);
+i:=i+1;
+end loop;
+end;
+
+declare 
+i number;
+begin
+i:=1;
+while( i<5) loop
+dbms_output.put_line(i);
+i:=i+1;
+end loop;
+end;
+
+declare 
+cnt number;
+begin
+cnt:=0;
+for i in 1..10 loop
+	if(i mod 2=0) then
+	dbms_output.put_line(i);
+	cnt:=cnt+1;
+	end if ;
+end loop;
+dbms_output.put_line(' tot even numbers='||cnt);
+end;
+
+begin 
+for i in reverse 1..10 loop
+dbms_output.put_line(i);
+end loop;
+end;
+
+declare
+i number;
+j number;
+begin
+i:=1;
+loop
+dbms_output.put_line('i='||i);
+i:=i+1;
+j:=1;
+	loop	
+	dbms_output.put_line('j='||j);
+	j:=j+1;
+	exit when j>4 ;
+	end loop;
+	dbms_output.put_line('end of inner loop');
+exit when i>4;
+end loop l1;
+dbms_output.put_line('end of outer loop');
+end;
+
+
+declare
+i number;
+j number;
+begin
+i:=1;
+<<l1>>
+loop
+dbms_output.put_line('i='||i);
+i:=i+1;
+j:=1;
+	<<l2>>
+	loop	
+	dbms_output.put_line('j='||j);
+	j:=j+1;
+	exit l1 when j=2; 
+	end loop l2;
+	dbms_output.put_line('end of inner loop');
+exit when i>4;
+end loop l1;
+dbms_output.put_line('end of outer loop');
+end;
+
+begin
+<<l1>>
+for i in  1..4 loop
+dbms_output.put_line('i='||i);
+	<<l2>>
+	for j in 1..4 loop
+	dbms_output.put_line('j='||j);
+	exit l1 when j=2;
+	end loop;
+end loop;
+end;
+
+record Type
+===========
+
+declare 
+type emp_rec is record
+(name varchar2(20),eno number,salary number(8,2));
+e1 emp_rec;
+begin
+e1.eno:=&a;
+select ename,sal into e1.name,e1.salary from emp where empno=e1.eno;
+dbms_output.put_line(e1.eno);
+dbms_output.put_line(e1.name);
+dbms_output.put_line(e1.salary);
+end;
+
+declare
+e emp%rowtype;
+begin
+select * into e from emp where empno=7900;
+dbms_output.put_line(e.ename);
+dbms_output.put_line(e.sal);
+dbms_output.put_line(e.hiredate);
+end;
+
+explicit cursor
+=================
+declare 
+cursor c1 is select * from emp;
+e emp%rowtype;
+begin
+open c1;
+dbms_output.put_line('empno   ename');
+dbms_output.put_line('==============');
+fetch c1 into e;
+while c1%found loop
+dbms_output.put_line(e.empno||' '||e.ename);
+fetch c1 into e;
+end loop;
+close c1;
+end;
+
+declare 
+cursor c1 is select * from emp;
+e emp%rowtype;
+begin
+open c1;
+dbms_output.put_line('empno   ename');
+dbms_output.put_line('==============');
+loop
+fetch c1 into e;
+dbms_output.put_line(e.empno||' '||e.ename);
+exit when c1%notfound;
+end loop;
+close c1;
+if c1%isopen then
+dbms_output.put_line('true');
+else
+dbms_output.put_line('false');
+end if;
+end;
+
+day 3:
+======
+cursor with for loop
+=====================
+declare 
+cusror c1 is select * from emp where deptno=10;
+begin 
+for e in c1  loop
+dbms_output.put(e.empno||'\t');
+dbms_output.put(e.ename||'\t');
+dbms_output.put(e.sal||'\t');
+dbms_output.put_line(e.deptno);
+end loop;
+end ;
+
+cursor for loop with subquery
+==============================
+begin 
+for e in (select * from emp)  loop
+dbms_output.put(e.empno||' \n ');
+dbms_output.put(e.ename||'  ');
+dbms_output.put(e.sal||'  ');
+dbms_output.put_line(e.deptno);
+end loop;
+end;
+
+cursor with parameter
+=====================
+declare 
+e emp%rowtype;
+cursor c1 (dno number)
+is
+select * from emp where deptno=dno;
+begin
+open c1(10);
+loop
+fetch c1 into e;
+exit when c1%notfound;
+dbms_output.put(e.empno||' ');
+dbms_output.put(e.ename||'  ');
+dbms_output.put(e.sal||'  ');
+dbms_output.put_line(e.deptno); 
+end loop;
+close c1;
+open c1(30);
+loop
+fetch c1 into e;
+exit when c1%notfound;
+dbms_output.put(e.empno||' ');
+dbms_output.put(e.ename||'  ');
+dbms_output.put(e.sal||'  ');
+dbms_output.put_line(e.deptno); 
+end loop;
+close c1;
+end ;
+
+
+declare 
+e emp%rowtype;
+cursor c1 (dno number)
+is
+select * from emp where deptno=dno;
+d number;
+begin
+d:=&d;
+open c1(d);
+loop
+fetch c1 into e;
+exit when c1%notfound;
+dbms_output.put(e.empno||' ');
+dbms_output.put(e.ename||'  ');
+dbms_output.put(e.sal||'  ');
+dbms_output.put_line(e.deptno); 
+end loop;
+close c1;
+end ;
+
+
+declare 
+d number:=20;
+cursor c1 is select * from emp where deptno=d;
+begin 
+for e in c1  loop
+dbms_output.put(e.empno||'\t');
+dbms_output.put(e.ename||'\t');
+dbms_output.put(e.sal||'\t');
+dbms_output.put_line(e.deptno);
+end loop;
+end ;
+
+Exception handling
+=================
+declare 
+eno number;
+e emp%rowtype;
+begin
+eno:=&eno;
+select * into e from emp where empno=eno;
+dbms_output.put(e.empno||' ');
+dbms_output.put(e.ename||'');
+dbms_output.put(e.sal||'');
+dbms_output.put_line(e.deptno);
+exception 
+when others then
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+end;
+
+
+declare 
+eno number;
+e emp%rowtype;
+begin
+eno:=&eno;
+select * into e from emp where deptno=eno;
+dbms_output.put(e.empno||' ');
+dbms_output.put(e.ename||'');
+dbms_output.put(e.sal||'');
+dbms_output.put_line(e.deptno);
+exception 
+when no_data_found then
+dbms_output.put_line(' no employee present ');
+when too_many_rows then
+dbms_output.put_line('exact match returns more rows');
+when others then
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+end;
+
+declare 
+eno number;
+e emp%rowtype;
+begin
+eno:=&eno;
+select * into e from emp where deptno=eno;
+dbms_output.put(e.empno||' ');
+dbms_output.put(e.ename||'');
+dbms_output.put(e.sal||'');
+dbms_output.put_line(e.deptno);
+exception 
+when no_data_found then
+dbms_output.put_line(' no employee present ');
+when too_many_rows then
+dbms_output.put_line('exact match returns more rows');
+end;
+
+declare 
+dup_data exception;
+pragma exception_init(dup_data,-1);
+begin
+insert into emp (empno,ename) values (7900,'Manisha');
+dbms_output.put_line(sql%rowcount);
+exception 
+when dup_data then
+dbms_output.put_line('employee exist');
+dbms_output.put_line(sqlcode); 
+when others then
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+end;
+
+declare
+del_exception exception ;
+pragma exception_init(del_exception,-02292);
+begin
+delete from dept where dno=10;
+dbms_output.put_line(sql%rowcount);
+exception 
+when no_data_found then
+dbms_output.put_line('no data found');
+when del_exception then
+dbms_output.put_line('child rows found');
+when others then
+dbms_output.put_line(sqlerrm);
+end;
+
+user defined exception
+======================
+declare 
+nodata_exe exception;
+eno number;
+begin
+eno:=&eno;
+update demo1 set sal=0 where empno=eno;
+if(sql%notfound) then
+raise nodata_exe;
+end if;
+exception 
+when nodata_exe then
+dbms_output.put_line('employee does not  exist');
+when others then
+dbms_output.put_line(sqlerrm);
+end;
+
+declare
+eno number;
+e emp%rowtype;
+nodata_exe exception;
+begin
+eno:=&eno;
+select * into e from emp where empno=eno;
+	declare 
+	no number;
+	begin
+	no:=&no;
+	update demo1 set sal=0 where empno=no;
+	if(sql%notfound) then
+	raise nodata_exe;
+	end if;
+	exception
+	when no_data_found then
+	dbms_output.put_line('emp doesnot exist!!!!');
+	end;
+dbms_output.put_line(e.empno);
+dbms_output.put_line(e.ename);
+exception
+when too_many_rows then
+dbms_output.put_line('too many rows ');
+when nodata_exe then
+dbms_output.put_line('Outer block employee does not  exist');
+when others then
+dbms_output.put_line(sqlerrm);
+end;
+
+
+
+declare
+eno number;
+e emp%rowtype;
+nodata_exe exception;
+begin
+eno:=&eno;
+select * into e from emp where empno=eno;
+	declare 
+	no number;
+	begin
+	no:=&no;
+	update demo1 set sal=0 where empno=no;
+	if(sql%notfound) then
+	raise nodata_exe;
+	end if;
+	exception
+	when no_data_found then
+	dbms_output.put_line('emp doesnot exist!!!!');
+	when others then
+	dbms_output.put_line(sqlerrm);
+	end;
+dbms_output.put_line(e.empno);
+dbms_output.put_line(e.ename);
+exception
+when too_many_rows then
+dbms_output.put_line('too many rows ');
+when nodata_exe then
+dbms_output.put_line('Outer block employee does not  exist');
+when others then
+dbms_output.put_line(sqlerrm);
+end;
+
+Day 4:
+=======
+
+prodedure and function 
+
+in ---input paramenter
+out --output parameter
+inout --input and output parameter
+
+create or replace procedure pr1
+as 
+begin
+dbms_output.put_line('hello');
+end pr1;
+
+create or replace procedure pr1(name varchar2,msg out varchar2)
+as 
+begin
+dbms_output.put_line('hello'||name);
+msg:='pr1 mgs@@@@';
+end pr1;
+
+variable a varchar2(20);
+exec pr1('Manisha',:a);
+print :a;
+
+declare
+a varchar2(20);
+begin
+pr1('manisha',a);
+dbms_output.put_line(a);
+end;
+
+create or replace procedure pr1(eno number,
+name out varchar2,tot out number)
+as 
+s emp.sal%type;
+c emp.comm%type;
+begin
+select ename,sal,nvl(comm,0) into name ,s, c from emp where empno=eno;
+tot:=s+c;
+end pr1;
+
+declare
+name varchar2(20);
+tot number(8,2);
+eno number;
+begin
+eno:=&eno;
+pr1(eno,name,tot);
+dbms_output.put_line(name ||' earns a salary of '||tot);
+end ;
+
+create or replace procedure pr1(eno number,
+name out varchar2,tot out number)
+as 
+s emp.sal%type;
+c emp.comm%type;
+begin
+select ename,sal,nvl(comm,0) into name ,s, c from emp where empno=eno;
+tot:=s+c;
+exception
+when no_data_found then
+dbms_output.put_line('emp does not exist');
+when others then
+dbms_output.put_line(sqlerrm);
+end pr1;
+
+create or replace procedure pr1
+as 
+e emp%rowtype;
+cursor c1 (dno number)
+is
+select * from emp where deptno=dno;
+begin
+open c1(100);
+loop
+fetch c1 into e;
+exit when c1%notfound;
+dbms_output.put_line(e.ename||' '||e.deptno);
+end loop;
+close c1;
+exception
+when no_data_found then 
+dbms_output.put_line('no data present');
+when others then
+dbms_output.put_line(sqlerrm);
+end pr1;
+
+create or replace function fr1(eno number) return varchar2
+as
+name varchar2(20);
+begin 
+select ename into name from emp where empno=eno;
+return name;
+end fr1;
+
+declare 
+a varchar2(20);
+begin
+a:=fr1(7900);
+dbms_output.put_line(a);
+end;
+
+:a:=fr1(7900); // error
+
+select fr1(7900) from dual;
+
+
+package
+1.declare
+2.define 
+
+create or replace package hr
+is
+procedure inc_sal (eno number);
+function display (eno number) return varchar2;
+end hr; 
+
+create or replace package body hr
+is
+	procedure inc_sal (eno number)
+	is 
+	name varchar2(20);
+	s number;
+	begin
+	select ename,sal into name,s from emp where empno=eno;
+	update emp set sal=s+1000 where empno=eno;
+	if(sql%found) then
+	dbms_output.put_line('data updated');
+	end if;
+	end inc_sal;
+	function display(eno number) return varchar2
+	is 
+	name varchar2(20);
+	begin
+	select ename into name from emp where empno=eno;
+	return name;
+	end display;
+end hr;
+
+exec hr.inc_sal(7900);
+
+day 5:
+Collection in PLSQl
+1.index by table
+DECLARE
+     TYPE employee_table_struct IS TABLE OF
+            emp.ename%TYPE
+            INDEX BY BINARY_INTEGER;
+         first_name_table employee_table_struct;
+    BEGIN
+    select ename,empno into first_name_table(1),first_name_table (2) 
+from emp where empno=7566;
+dbms_output.put_line(first_name_table(1));
+dbms_output.put_line(first_name_table(2));
+END;
+ 
+
+DECLARE 
+   TYPE salary IS TABLE OF NUMBER INDEX BY VARCHAR2(20); 
+   salary_list salary; 
+   name   VARCHAR2(20); 
+BEGIN 
+   -- adding elements to the table 
+   salary_list('Rajnish') := 62000; 
+   salary_list('Minakshi') := 75000; 
+   salary_list('Martin') := 100000; 
+   salary_list('James') := 78000;  
+   
+   -- printing the table 
+   name := salary_list.FIRST; 
+   WHILE name IS NOT null LOOP 
+      dbms_output.put_line 
+      ('Salary of ' || name || ' is ' || TO_CHAR(salary_list(name))); 
+      name := salary_list.NEXT(name); 
+   END LOOP; 
+END; 
+
+
+DECLARE
+      TYPE employee_table_struct IS TABLE OF
+           emp%rowTYPE
+           INDEX BY BINARY_INTEGER; 
+      employee_table    employee_table_struct; 
+      CURSOR employee_cursor IS
+           SELECT * FROM emp ORDER BY empno; 
+      v_row      NUMBER := 1;
+   BEGIN
+       OPEN employee_cursor;
+       LOOP
+          EXIT WHEN employee_cursor%NOTFOUND;
+          fetch employee_cursor into employee_table(v_row); 
+           DBMS_OUTPUT.PUT(employee_table(0).empno);
+           DBMS_OUTPUT.PUT_LINE(employee_table(0).ename);
+                     v_row := v_row + 1;
+      END LOOP; 
+      CLOSE employee_cursor;
+   END;
+ 
+varray:
+========
+
+varray
+======
+Varray is a collection method in which the size of the array is fixed. The array size cannot be exceeded than its fixed value. The subscript of the Varray is of a numeric value. Following are the attributes of Varrays.
+
+DECLARE 
+   type namesarray IS VARRAY(6) OF VARCHAR2(10); 
+   type grades IS VARRAY(5) OF INTEGER; 
+   names namesarray; 
+   marks grades; 
+   total integer; 
+BEGIN 
+   names := namesarray('Kavita', 'Pritam', 'Ayan', 'Rishav', 'Aziz',
+'Manisha'); 
+   marks:= grades(98, 97, 78, 87, 92); 
+   total := names.count; 
+dbms_output.put_line('markes='||marks.count);
+   dbms_output.put_line('Total '|| total || ' Students'); 
+   FOR i in 1 .. total LOOP 
+      dbms_output.put_line('Student: ' || names(i) || ' 
+      Marks: ' || marks(i)); 
+   END LOOP; 
+exception 
+when others then 
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+END; 
+
+Trigger:
+========
+CREATE OR REPLACE TRIGGER t1
+BEFORE INSERT OR UPDATE OR DELETE ON emp
+BEGIN
+IF (TO_CHAR (SYSDATE,'DY') IN ('THU','FRI')) OR
+(TO_CHAR (SYSDATE, 'HH24') NOT BETWEEN '08' AND '18') 
+THEN
+IF DELETING THEN 
+RAISE_APPLICATION_ERROR (-20502,'You may delete from 
+EMPLOYEES table only during business hours.');
+ELSIF INSERTING THEN
+RAISE_APPLICATION_ERROR (-20500,'You may insert into 
+EMPLOYEES table only during business hours.');
+ELSIF UPDATING ('SALARY') THEN
+RAISE_APPLICATION_ERROR (-20503,'You may update 
+SALARY only during business hours.');
+ELSE
+RAISE_APPLICATION_ERROR (-20504,'You may update 
+EMPLOYEES table only during normal hours.');
+END IF;
+END IF;
+END;
+
+
+create or replace trigger t11
+after 
+delete or update on copy_emp
+for each row
+declare
+pragma autonomous_transaction;
+begin
+ insert into del(id,name,oldsal,newsal)
+ values(:old.empno,:old.ename,:old.sal,:new.sal);
+commit;
+end;
+
+create or replace trigger t12
+after delete or update on old_emp
+for each row
+begin
+ if deleting then
+ insert into del(id,name,oldsal,newsal)
+ values(:old.empno,:old.ename,:old.sal,:new.sal);
+ elsif updating then
+  insert into copy(id,name,old_sal,new_sal)
+    values(:old.empno,:old.ename,:old.sal,:new.sal);
+ end if;
+end;
+
+
+
+trigger on view
+===============
+create or replace view emp_detail 
+as
+select e.empno,e.ename,e.sal,e.deptno,e.job,d.dname
+from emp e,dept d
+where e.deptno=d.deptno;
+
+
+create table new_emp1 as
+select empno,ename,sal,deptno,job,hiredate
+from emp;
+
+create table new_dept as
+select e.deptno,dname,sum(e.sal)tot_dept_sal
+from emp e,dept d
+group by e.deptno,d.dname
+order by 1;
+
+create or replace trigger viewtrigger
+instead of insert or update or delete on emp_detail
+for each row
+begin
+ if inserting then
+   insert into new_emp1 values  (:new.empno,:new.ename,:new.sal,:new.deptno,:new.job,sysdate);
+update new_dept set tot_dept_sal=tot_dept_sal+:new.sal
+where deptno=:new.deptno;
+end if;
+end viewtrigger;
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
