@@ -1,0 +1,81 @@
+user defined exception
+======================
+declare 
+nodata_exe exception;
+eno number;
+begin
+eno:=&eno;
+update demo1 set sal=0 where empno=eno;
+if(sql%notfound) then
+raise nodata_exe;
+end if;
+exception 
+when nodata_exe then
+dbms_output.put_line('employee does not  exist');
+when others then
+dbms_output.put_line(sqlerrm);
+end;
+
+declare
+eno number;
+e emp%rowtype;
+nodata_exe exception;
+begin
+eno:=&eno;
+select * into e from emp where empno=eno;
+	declare 
+	no number;
+	begin
+	no:=&no;
+	update demo1 set sal=0 where empno=no;
+	if(sql%notfound) then
+	raise nodata_exe;
+	end if;
+	exception
+	when no_data_found then
+	dbms_output.put_line('emp doesnot exist!!!!');
+	end;
+dbms_output.put_line(e.empno);
+dbms_output.put_line(e.ename);
+exception
+when too_many_rows then
+dbms_output.put_line('too many rows ');
+when nodata_exe then
+dbms_output.put_line('Outer block employee does not  exist');
+when others then
+dbms_output.put_line(sqlerrm);
+end;
+
+
+
+declare
+eno number;
+e emp%rowtype;
+nodata_exe exception;
+begin
+eno:=&eno;
+select * into e from emp where empno=eno;
+	declare 
+	no number;
+	begin
+	no:=&no;
+	update demo1 set sal=0 where empno=no;
+	if(sql%notfound) then
+	raise nodata_exe;
+	end if;
+	exception
+	when no_data_found then
+	dbms_output.put_line('emp doesnot exist!!!!');
+	when others then
+	dbms_output.put_line(sqlerrm);
+	end;
+dbms_output.put_line(e.empno);
+dbms_output.put_line(e.ename);
+exception
+when too_many_rows then
+dbms_output.put_line('too many rows ');
+when nodata_exe then
+dbms_output.put_line('Outer block employee does not  exist');
+when others then
+dbms_output.put_line(sqlerrm);
+end;

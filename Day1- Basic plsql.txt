@@ -1,0 +1,181 @@
+block
+3 types
+ana
+fun
+pro
+
+ 
+
+declare
+a number;
+b number;
+c number;
+begin
+a:=&a;
+b:=&b;
+c:=a+b;
+dbms_output.put_line('sum='||c);
+end;
+
+  
+
+declare 
+emp number;
+begin
+select * into emp from emp where empno=7900;
+dbms_output.put_line(emp);
+end;
+
+
+declare
+eno number;
+name varchar2(20);
+j varchar2(20);
+s number(8,2);
+begin
+eno:=&eno;
+select ename,sal,job into name,s,j from emp where empno=eno;
+dbms_output.put_line('name='||name);
+dbms_output.put_line('Job='||j);
+dbms_output.put_line('salary'||s);
+end;
+
+
+ 
+
+%type attribute
+================
+declare
+eno emp.empno%type;
+name emp.ename%type;
+j emp.job%type;
+s emp.sal%type;
+begin
+eno:=&eno;
+select ename,sal,job into name,s,j from emp where empno=eno;
+dbms_output.put_line('name='||name);
+dbms_output.put_line('Job='||j);
+dbms_output.put_line('salary'||s);
+end;
+
+ 
+
+ 
+
+ 
+
+Bind Variables
+===============
+variable name varchar;
+variable s number;
+begin
+select ename,sal into :name,:s from emp where empno=7900;
+end;
+
+ 
+
+print :name
+print :s
+
+ 
+
+begin 
+dbms_output.put_line(:name);
+dbms_output.put_line(:s);
+end;
+
+ 
+
+boolean variable
+================
+declare 
+flag boolean;
+a number :=10;
+result varchar2(20);
+begin 
+if (a>0) then
+flag:=true;
+result:='true';
+else
+flag:=false;
+result:='false';
+end if;
+dbms_output.put_line(result);
+dbms_output.put_line(flag);
+end;
+
+ 
+
+constant and variable
+=====================
+declare 
+pi constant number(8,2):=3.2;
+begin
+pi:=100;
+dbms_output.put_line(pi);
+end;
+
+ 
+
+Nested Block
+=============
+declare
+a number;
+begin
+a:=&a;
+    declare 
+    b number;
+    begin
+    b:=&b;
+    dbms_output.put_line(a);
+    dbms_output.put_line(b);
+    end;
+dbms_output.put_line('outer block'||b); //scope error
+end;
+
+
+
+<<outer>>
+declare
+a number;
+begin
+a:=&a;
+    declare 
+    a number;
+    b number;
+    begin
+    a:=&a;
+    b:=&b;
+    dbms_output.put_line('SUM IS:');
+    dbms_output.put_line(outer.a+a+b);
+    end;
+dbms_output.put_line('outer block: ' ||a);
+end;
+
+ 
+
+ 
+
+SQL> define eno =7900
+SQL> declare
+    name varchar2(20);
+   begin
+    select ename into name from emp where empno=&eno;
+    dbms_output.put_line(name);
+   end;
+
+ 
+
+ 
+
+declare 
+a number :=100;
+begin 
+a:=200;
+a:=&num1;
+select ename into name from emp where empno=7900;
+
+
+
+
+ 

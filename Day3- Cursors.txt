@@ -1,0 +1,98 @@
+
+declare 
+d number:=104;
+cursor c1 is select * from student where sno=d;
+begin 
+for e in c1  loop
+dbms_output.put(e.sno||'\t');
+dbms_output.put(e.sname||'\t');
+dbms_output.put(e.sage||'\t');
+dbms_output.put_line(e.scity);
+end loop;
+end ;
+
+cursor with for loop
+=====================
+declare 
+cursor c1 is select * from student;
+begin 
+for q in c1  loop
+dbms_output.put(q.sno||'\t');
+dbms_output.put(q.sname||'\t');
+dbms_output.put(q.sage||'\t');
+dbms_output.put_line(q.scity);
+end loop;
+end ;
+
+ 
+
+cursor for loop with subquery
+==============================
+begin 
+for e in (select * from student)  loop
+dbms_output.put(e.sno||' \n ');
+dbms_output.put(e.sname||'  ');
+dbms_output.put(e.sage||'  ');
+dbms_output.put_line(e.scity);
+end loop;
+end;
+
+ 
+
+cursor with parameter
+=====================
+declare 
+e student%rowtype;
+cursor c1 (ssno number)
+is
+select * from student where sno=ssno;
+begin
+open c1(101);
+loop
+fetch c1 into e;
+exit when c1%notfound;
+dbms_output.put(e.sno||' ');
+dbms_output.put(e.sname||'  ');
+dbms_output.put(e.sage||'  ');
+dbms_output.put(e.scity); 
+end loop;
+close c1;
+open c1(103);
+loop
+fetch c1 into e;
+exit when c1%notfound;
+dbms_output.put(e.sno||' ');
+dbms_output.put(e.sname||'  ');
+dbms_output.put(e.sage||'  ');
+dbms_output.put_line(e.scity); 
+end loop;
+close c1;
+end ;
+
+ 
+
+ 
+
+declare 
+e emp%rowtype;
+cursor c1 (dno number)
+is
+select * from emp where deptno=dno;
+d number;
+begin
+d:=&d;
+open c1(d);
+loop
+fetch c1 into e;
+exit when c1%notfound;
+dbms_output.put(e.empno||' ');
+dbms_output.put(e.ename||'  ');
+dbms_output.put(e.sal||'  ');
+dbms_output.put_line(e.deptno); 
+end loop;
+close c1;
+end ;
+
+ 
+
+ 

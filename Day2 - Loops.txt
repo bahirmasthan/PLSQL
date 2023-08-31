@@ -1,0 +1,292 @@
+Day 2
+
+declare
+eno number;
+e1 student%rowtype;
+begin
+eno:=&eno;
+select  * into e1 from student where sno=eno;
+dbms_output.put_line('present');
+end;
+
+
+
+declare 
+begin
+i:=1;
+while(i<5) loop
+dbms_output.put_line(i);
+i:=i+1;
+end loop;
+end;
+
+
+
+
+
+
+declare 
+ssno number;
+ssname varchar2(20);
+ssage number(3);
+sscity varchar(20);
+i number;
+begin
+i:=1;
+while(i<3) loop
+dbms_output.put_line(i);
+i:=i+1;
+ssno:=&ssno;
+ssname:='&ssname';
+ssage:=&ssage;
+sscity:='&sscity';
+insert into student values(ssno,ssname,ssage,sscity);
+end loop;
+dbms_output.put_line('Inserted Sucessfully');
+end;
+
+
+
+declare 
+ssno number;
+ssname varchar2(20);
+ssage number(3);
+sscity varchar(20);
+i number;
+begin
+i:=1;
+loop
+ssno:=&ssno;
+ssname:='&ssname';
+ssage:=&ssage;
+sscity:='&sscity';
+insert into student values(ssno,ssname,ssage,sscity);
+i:=i+1;
+exit when i>3;
+end loop;
+dbms_output.put_line('Inserted Sucessfully');
+end;
+
+
+declare
+ssno number;
+ssname varchar2(20);
+ssage number(3);
+sscity varchar(20);
+begin
+ssno:=&ssno;
+ssname:='&ssname';
+ssage:=&ssage;
+sscity:='&sscity';
+insert into student values(ssno,ssname,ssage,sscity);
+dbms_output.put_line('Inserted Sucessfully');
+end;
+
+
+implicit cursor %found
+=======================
+declare
+eno number;
+e1 student%rowtype;
+begin
+eno:=&eno;
+select * into e1 from student  where sno=eno;
+if (SQL%found) then
+dbms_output.put_line('student present');
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('no data found');
+when others then
+dbms_output.put_line('error');
+end ;
+
+
+implicit cursor %rowcount
+=======================
+declare 
+city student.scity%type;
+sid student.sno%type;
+cnt number;
+begin
+city:='&city';
+select sno into sid from student where scity=city;
+--delete from student where sno=j;
+cnt:=sql%rowcount;
+dbms_output.put_line(cnt || ' rows seleted...');
+end;
+
+ 
+
+declare 
+aage student.sage%type;
+cnt number;
+begin
+aage:=&aage;
+if (aage=11) then
+update student set sage=21 where sage=aage;
+elsif(aage=12) then
+update student set sage=22 where sage=aage;
+else
+update student set sage=33 where sage=aage;
+end if;
+cnt:=sql%rowcount;
+dbms_output.put_line(cnt || ' rows Updated...');
+end;
+
+ 
+
+
+Simple loop 1
+==============
+declare 
+i number;
+begin
+i:=1;
+loop
+dbms_output.put_line('IN'||i);
+i:=i+1;
+exit when i>5 ;
+end loop;
+dbms_output.put_line('OUT'||i);
+end;
+
+Simple loop 2
+==============
+
+declare 
+i number;
+begin
+i=&i;
+loop
+exit when i5 ;
+dbms_output.put_line(i);
+i=i+1;
+end loop;
+dbms_output.put_line('OUT'i);
+end;
+
+
+
+
+While loop
+===========
+declare 
+i number;
+begin
+i:=1;
+while(i<5) loop
+dbms_output.put_line(i);
+i:=i+1;
+end loop;
+end;
+
+
+declare 
+cnt number;
+begin
+cnt=0;
+for i in 1..10 loop
+    if(i mod 2=0) then
+    dbms_output.put_line(i);
+    cnt=cnt+1;
+    end if ;
+end loop;
+dbms_output.put_line(' tot even numbers='cnt);
+end;
+
+ 
+
+begin 
+for i in reverse 1..10 loop
+dbms_output.put_line(i);
+end loop;
+end;
+
+ 
+
+declare
+i number;
+j number;
+begin
+i=1;
+loop
+dbms_output.put_line('i='i);
+i=i+1;
+j=1;
+    loop    
+    dbms_output.put_line('j='j);
+    j=j+1;
+    exit when j4 ;
+    end loop;
+    dbms_output.put_line('end of inner loop');
+exit when i4;
+end loop;
+dbms_output.put_line('end of outer loop');
+end;
+
+
+record Type
+===========
+
+ 
+
+declare 
+type stu_rec is record
+(city varchar2(20),name varchar2(20));
+e1 stu_rec;
+a number;
+begin
+a:=&a;
+select scity,sname into e1.city,e1.name from student where sno=a;
+dbms_output.put_line(e1.name);
+dbms_output.put_line(e1.city);
+end;
+
+ 
+
+declare
+e emp%rowtype;
+begin
+select  into e from emp where empno=7900;
+dbms_output.put_line(e.ename);
+dbms_output.put_line(e.sal);
+dbms_output.put_line(e.hiredate);
+end;
+
+ 
+
+explicit cursor
+=================
+declare 
+cursor c1 is select *  from student where sage=21;
+e student%rowtype;
+begin
+open c1;
+dbms_output.put_line('sno   sname   sage');
+dbms_output.put_line('==================');
+fetch c1 into e;
+while c1%found loop
+dbms_output.put_line(e.sno ||' ' || e.sname ||' ' || e.sage);
+fetch c1 into e;
+end loop;
+close c1;
+end;
+
+ 
+
+declare 
+cursor c1 is select *  from student;
+e student%rowtype;
+begin
+open c1;
+dbms_output.put_line('sno   scity   sage  ');
+dbms_output.put_line('==================');
+loop
+fetch c1 into e;
+dbms_output.put_line(e.sno ||' ' || upper(e.scity) ||' ' || e.sage)\);
+exit when c1%notfound;
+end loop;
+close c1;
+end;
+

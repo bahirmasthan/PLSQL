@@ -1,0 +1,33 @@
+create or replace package hr
+is
+procedure inc_sal (eno number);
+function display (eno number) return varchar2;
+end hr;
+
+ 
+
+create or replace package body hr
+is
+    procedure inc_sal (eno number)
+    is 
+    name varchar2(20);
+    s number;
+    begin
+    select ename,sal into name,s from emp where empno=eno;
+    update emp set sal=s+1000 where empno=eno;
+    if(sql%found) then
+    dbms_output.put_line('data updated');
+    end if;
+    end inc_sal;
+    function display(eno number) return varchar2
+    is 
+    name varchar2(20);
+    begin
+    select ename into name from emp where empno=eno;
+    return name;
+    end display;
+end hr;
+
+ 
+
+exec hr.inc_sal(7900);

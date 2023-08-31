@@ -1,0 +1,156 @@
+
+in ---input paramenter
+out --output parameter
+inout --input and output parameter
+
+ 
+SQL> desc all_source;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ OWNER                                              VARCHAR2(30)
+ NAME                                               VARCHAR2(30)
+ TYPE                                               VARCHAR2(12)
+ LINE                                               NUMBER
+ TEXT                                               VARCHAR2(4000)
+
+SQL> SELECT TEXT from all_source where name='PR1';
+
+TEXT
+----------------------------------------------------------------------------------------------------
+procedure pr1
+as
+begin
+dbms_output.put_line('hello');
+end pr1;
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+No Argument:
+===========
+
+create or replace procedure pr1
+as 
+begin
+dbms_output.put_line('hello');
+end pr1;
+
+To Execute:
+===========
+exec pr1 
+
+ 
+IN and OUT Argument:
+====================
+create or replace procedure pr2(name varchar2,msg out varchar2)
+as 
+begin
+dbms_output.put_line('Hello '||name);
+msg:='PR2 Executed';
+end pr2;
+
+ 
+To Execute:
+===========
+variable a varchar2(20);
+exec pr2('Mas',:a);
+print :a;
+
+ 
+Execute from BLOCK
+-------------------
+declare
+a varchar2(20);
+begin
+pr2('Mas',a);
+dbms_output.put_line(a);
+end;
+
+ 
+Queries in Procedure
+----------------------
+create or replace procedure pr3(id number,
+name out varchar2,city out varchar2)
+as 
+begin
+select sname,scity into name ,city from student where sno=id;
+end pr3;
+
+ 
+
+declare
+nsname varchar2(20);
+nscity varchar(20);
+nsno number;
+begin
+nsno:=&eno;
+pr3(nsno,nsname,nscity);
+dbms_output.put_line(nsname ||' lives in '||nscity);
+end ;
+
+
+
+create or replace procedure pr1(eno number,
+name out varchar2,tot out number)
+as 
+s emp.sal%type;
+c emp.comm%type;
+begin
+select ename,sal,nvl(comm,0) into name ,s, c from emp where empno=eno;
+tot:=s+c;
+exception
+when no_data_found then
+dbms_output.put_line('emp does not exist');
+when others then
+dbms_output.put_line(sqlerrm);
+end pr1;
+
+ 
+
+create or replace procedure pr1
+as 
+e emp%rowtype;
+cursor c1 (dno number)
+is
+select * from emp where deptno=dno;
+begin
+open c1(100);
+loop
+fetch c1 into e;
+exit when c1%notfound;
+dbms_output.put_line(e.ename||' '||e.deptno);
+end loop;
+close c1;
+exception
+when no_data_found then 
+dbms_output.put_line('no data present');
+when others then
+dbms_output.put_line(sqlerrm);
+end pr1;
+
+ 
+
+create or replace function fn1(ssno number) return varchar2
+as
+ssname varchar2(20);
+begin 
+select sname into ssname from student where sno=ssno;
+return ssname;
+end fn1;
+
+ 
+
+declare 
+a varchar2(20);
+begin
+a:=fn1(101);
+dbms_output.put_line(a);
+end;
+
+ 
+
+:a:=fr1(7900); // error
+
+ 
+
+select fr1(7900) from dual;

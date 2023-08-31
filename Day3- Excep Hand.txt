@@ -1,0 +1,91 @@
+Exception handling
+=================
+declare 
+eno number;
+e student%rowtype;
+begin
+eno:=&eno;
+select * into e from student where sno=eno;
+dbms_output.put(e.sno||' ');
+dbms_output.put(e.sname||'');
+dbms_output.put(e.sage||'');
+dbms_output.put_line(e.scity);
+exception 
+when others then
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+end;
+
+
+declare 
+eno number;
+e student%rowtype;
+begin
+eno:=&www;
+select * into e from student where sage=eno;
+dbms_output.put(e.sno||' ');
+dbms_output.put(e.sname||'');
+dbms_output.put(e.sage||'');
+dbms_output.put_line(e.scity);
+exception 
+when no_data_found then
+dbms_output.put_line(' student not present ');
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+when too_many_rows then
+dbms_output.put_line('exact match returns more rows');
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+when others then
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+end;
+
+declare 
+eno number;
+e emp%rowtype;
+begin
+eno:=&eno;
+select * into e from emp where deptno=eno;
+dbms_output.put(e.empno||' ');
+dbms_output.put(e.ename||'');
+dbms_output.put(e.sal||'');
+dbms_output.put_line(e.deptno);
+exception 
+when no_data_found then
+dbms_output.put_line(' no employee present ');
+when too_many_rows then
+dbms_output.put_line('exact match returns more rows');
+end;
+
+declare 
+dup_data exception;
+pragma exception_init(dup_data,-144);
+begin
+insert into student (sno,sname,scity) values (101,'Mmm','Salem');
+dbms_output.put_line(sql%rowcount);
+exception 
+when dup_data then
+dbms_output.put_line('employee exist');
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode); 
+when others then
+dbms_output.put_line(sqlerrm);
+dbms_output.put_line(sqlcode);
+end;
+
+declare
+del_exception exception ;
+pragma exception_init(del_exception,-02292);
+begin
+delete from dept where dno=10;
+dbms_output.put_line(sql%rowcount);
+exception 
+when no_data_found then
+dbms_output.put_line('no data found');
+when del_exception then
+dbms_output.put_line('child rows found');
+when others then
+dbms_output.put_line(sqlerrm);
+end;
+
